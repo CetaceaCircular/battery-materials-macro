@@ -7,7 +7,9 @@
    "eol": "TWh of EoL battery feedstock",
    "materials": "Mt per year (key metals: lithium LCE, nickel, cobalt, copper, graphite)",
    "plants": "20 ktpa integrated black-mass-to-battery-grade units",
-   "capex_per_plant_USD": 75000000
+   "capex_per_plant_USD": 100000000,
+   "plant": "Baiji Inside\u2122 Certified dual-line (LFP/NCM): 40 ktpa EoL feedstock -> 10 ktpa battery-grade materials at 4:1 mass balance, 2025 US$100M; tCO2e Certificates maintained on locked ECRU Registry",
+   "plant_throughput_GWh_EoL_per_year": 6.7
   },
   "materials_list": [
    "Lithium (LCE)",
@@ -356,12 +358,13 @@
   ]
  },
  "derived_rules": {
-  "plants_operating": "eol_feedstock_TWh * 1000 / 4.5 (each 20 ktpa plant processes ~4.5 GWh of EoL batteries p.a.)",
-  "cumulative_investment_USD": "sum of annual plant additions * 75,000,000",
+  "plants_operating": "eol_feedstock_TWh * 1000 / 6.7 (each 40 ktpa EoL plant processes ~6.7 GWh of EoL batteries p.a. at ~6 kt/GWh)",
+  "cumulative_investment_USD": "sum of annual plant additions * 100,000,000",
   "materials_demand_t": "total_demand_TWh * 1000 * intensity_kt_per_GWh",
   "event_markers": {
    "2026": "Hormuz factor: diesel economics broken; illustrative global spikes EV +38%, PV +30%, BESS +55%, diesel gensets -38% vs 2025"
-  }
+  },
+  "battery_grade_output": "plants * 10,000 tpa at 4:1 mass balance (40 kt EoL -> 10 kt battery-grade)"
  },
  "demand_bridge_2040_TWh": {
   "consensus_baseline": 11.5,

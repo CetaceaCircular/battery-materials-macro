@@ -63,7 +63,7 @@ body{margin:0;background:#fafafa;padding:24px}
 </div>
 
 <div class="grid" id="grid"></div>
-<div class="note">Derived from the demand model: swap float = swapped segments (2/3W, taxis, commercial, marine) × 2 spare packs in circulation; stations assume ~250 MWh swapped volume per station (mixed light/heavy); charging = in-service vehicle stock × ~32 equivalent full cycles/yr; backup fleet = dedicated resilience share of cumulative stationary storage; recovery nodes = processing plants + ~1 collection depot per 5 GWh/yr of EoL feedstock. Illustrative figures.</div>
+<div class="note">Derived from the demand model: swap float = swapped segments (2/3W, taxis, commercial, marine) × 2 spare packs in circulation; stations assume ~250 MWh swapped volume per station (mixed light/heavy); charging = in-service vehicle stock × ~32 equivalent full cycles/yr; backup fleet = dedicated resilience share of cumulative stationary storage; recovery nodes = Baiji Inside™ Certified dual-line plants (40 ktpa EoL → 10 ktpa battery-grade, 4:1) + ~1 collection depot per 5 GWh/yr of EoL feedstock. Illustrative figures.</div>
 </div>
 
 <script>
@@ -91,7 +91,7 @@ function series(){
  for(let i=1;i<6;i++)cb[i]=cb[i-1]+(be[i-1]+be[i])/2*5*0.95;
  const bak=cb.map((v,i)=>v*BSH[i]*1000);
  const stations=fl.map(v=>Math.round(v*1e6/250));
- const plants=s.eol.map(e=>Math.round(e*1000/4.5));
+ const plants=s.eol.map(e=>Math.round(e*1000/6.7));
  const depots=s.eol.map(e=>Math.round(e*1000/5));
  return {fl,stk,chg,bak,stations,plants,depots,ev};
 }
@@ -112,7 +112,7 @@ const PANELS=[
  {k:'fl',t:'Spare-pack float',u:'TWh of packs in stations',d:'grid-tied storage owned by operators',d2:1},
  {k:'chg',t:'Charging energy',u:'TWh / yr',d:'electrons through somebody\u2019s meter',d2:0},
  {k:'bak',t:'Backup / resilience fleet',u:'GWh of dedicated backup packs',d:'the diesel-genset replacement class',d2:0},
- {k:'plants',t:'Recovery plants',u:'20 ktpa integrated units',d:'the disposal network\u2019s engine room',d2:0},
+ {k:'plants',t:'Recovery plants',u:'40 kt EoL dual-line units',d:'the disposal network\u2019s engine room',d2:0},
  {k:'depots',t:'Collection depots',u:'feedstock gateways',d:'reverse logistics — the certification surface',d2:0}];
 function render(){
  $('yearLab').textContent=YEARS[st.y];

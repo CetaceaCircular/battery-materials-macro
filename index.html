@@ -77,7 +77,7 @@ body{margin:0;background:#fafafa;padding:24px}
 
 <div class="nav" id="nav"></div>
 <div class="stage" id="stage"></div>
-<div class="note">Illustrative modelled figures — Cetacea house view built for discussion, not investment advice. Materials = key metals (lithium LCE, nickel, cobalt, copper, graphite). Plant = 20 ktpa integrated black-mass-to-battery-grade unit, ~US$75M. Re-verify against current market data before external use.</div>
+<div class="note">Illustrative modelled figures — Cetacea house view built for discussion, not investment advice. Materials = key metals (lithium LCE, nickel, cobalt, copper, graphite). Unit = Baiji Inside™ (白鱀芯生™) Certified dual-line (LFP/NCM): 40 ktpa EoL feedstock → 10 ktpa battery-grade materials at 4:1 mass balance (2025 US$100M). tCO₂e Certificates maintained on locked ECRU Registry. Re-verify against current market data before external use.</div>
 </div>
 
 <script>
@@ -147,7 +147,7 @@ const SLIDES=[
    +kpi(fmt(t*(1-D[st.s].ev[st.y])),'BESS demand TWh')
    +kpi(fmt(D[st.s].eol[st.y]*1000),'EoL feedstock GWh')
    +kpi(Math.round(D[st.s].rec[st.y]*100)+'%','Materials from recovery')
-   +kpi(fmt(t*kf()),'… of which '+(st.r==='CN'?'China':'this region')+' TWh')+'</div>';
+   +kpi(fmt(t*kf()),'… of which '+(st.r==='CN'?'China':(st.r==='ROW'?'Rest of world':'Global'))+' TWh')+'</div>';
  }},
  {n:'EV sectors',f(){
   const t=D[st.s].tot[st.y],ev=t*D[st.s].ev[st.y];
@@ -230,7 +230,7 @@ const SLIDES=[
  }},
  {n:'Plants & investment',f(){
   const W=760,H=310,pl=52,pb=30,pt=16,pr=52,y0=H-pb,x0=pl,yw=H-pb-pt,xw=W-pl-pr;
-  const plants=YEARS.map((_,i)=>Math.round(D[st.s].eol[i]*1000/4.5));
+  const plants=YEARS.map((_,i)=>Math.round(D[st.s].eol[i]*1000/6.7));
   let cum=[],c=0;for(let i=0;i<6;i++){c+=(plants[i]-(i?plants[i-1]:0))*0.075;cum.push(c);}
   const mx=9000,Y=v=>y0-yw*v/mx,X=i=>x0+xw*i/5,bw=xw/6*0.5;
   const Y2=v=>y0-yw*v/cum[5];
@@ -244,7 +244,7 @@ const SLIDES=[
   YEARS.forEach((yr,i)=>g+='<text x="'+X(i)+'" y="'+(H-10)+'" text-anchor="middle" font-size="11" fill="'+GR+'">'+yr+'</text>');
   g+='<text x="'+(x0-6)+'" y="'+(pt+2)+'" text-anchor="end" font-size="10" fill="'+GR+'">plants</text></svg>';
   return '<h3>Recovery capacity: plants required and investment</h3>'+g
-   +'<div class="evm"><div><div class="v num">'+plants[st.y].toLocaleString()+'</div><div class="l">20 ktpa integrated plants operating, '+YEARS[st.y]+'</div></div>'
+   +'<div class="evm"><div><div class="v num">'+plants[st.y].toLocaleString()+'</div><div class="l">40 kt EoL dual-line plants operating, '+YEARS[st.y]+'</div></div>'
    +'<div><div class="v num">US$'+fmt(cum[st.y],0)+'B</div><div class="l">Cumulative build-out investment to '+YEARS[st.y]+'</div></div>'
    +'<div><div class="v num">'+plants[5].toLocaleString()+'</div><div class="l">Plants needed by 2050 ('+(st.s==='C'?'consensus':st.s==='A'?'accelerated':'doubling down')+')</div></div></div>'
    +'<div class="sub">Megapacks and deep-DoD cycling shorten asset life — so every upward re-rating of demand is also an upward re-rating of EoL feedstock. The build-out is a 16th FYP-scale industrial programme, and the natural home for green manufacturing credit, ZCF-linked finance and the certification layer.</div>';
@@ -263,9 +263,9 @@ const SLIDES=[
    +'<div class="sub" style="margin-top:8px">In this model Hormuz is not a one-off spike — it is the pilot run. Diesel is written out of the applied-energy stack, and each re-base compounds: harsher asset use → deeper cycling → faster end-of-life → more recovery feedstock into the 16th FYP fast-track.</div>';
  }},
  {n:'The gap',f(){
-  const inv=s=>{let c=[],cc=0,pc=0;for(let i=0;i<6;i++){const p=Math.round(s.eol[i]*1000/4.5);cc+=(p-pc)*0.075;pc=p;c.push(cc);}return c;};
+  const inv=s=>{let c=[],cc=0,pc=0;for(let i=0;i<6;i++){const p=Math.round(s.eol[i]*1000/6.7);cc+=(p-pc)*0.1;pc=p;c.push(cc);}return c;};
   const invC=inv(D.C),invA=inv(D.A),invD=inv(D.DD);
-  const rows=[['Total demand (TWh)','tot',1],['EoL feedstock (GWh)','eol',1000],['Materials from recovery (%)','rec',100],['Plants operating','eol',1/4.5*1000],['Cumulative investment (US$B)','inv',1]];
+  const rows=[['Total demand (TWh)','tot',1],['EoL feedstock (GWh)','eol',1000],['Materials from recovery (%)','rec',100],['Plants operating','eol',1/6.7*1000],['Cumulative investment (US$B)','inv',1]];
   const val=(r,f,i)=>r[1]==='inv'?f[i]:(r[1]==='rec'?Math.round(f[r[1]][i]*100):fmt(f[r[1]][i]*r[2],f[r[1]][i]*r[2]<20?1:0));
   let h='<h3>Three futures — the gap at a glance</h3><table><tr><th>Metric</th><th>2030</th><th>2035</th><th>2050</th><th>2030</th><th>2035</th><th>2050</th><th>2030</th><th>2035</th><th>2050</th></tr><tr><th></th><th colspan="3" style="text-align:center;color:'+C5+'">Consensus</th><th colspan="3" style="text-align:center;color:'+C1+'">Accelerated</th><th colspan="3" style="text-align:center;color:'+TP+'">Doubling Down</th></tr>';
   rows.forEach(r=>{h+='<tr><td>'+r[0]+'</td>';

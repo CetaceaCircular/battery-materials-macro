@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Battery demand and EoL materials 2020-2050 - three futures (Cetacea house view)</title>
+<style>
+:root{
+ --kimi-font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+ --kimi-font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+ --kimi-color-text-primary:#1a1a1a; --kimi-color-text-secondary:#4d4d4d;
+ --kimi-color-text-tertiary:#737373; --kimi-color-text-quaternary:#a6a6a6;
+ --kimi-color-surface:#ffffff; --kimi-color-surface-muted:#f5f5f5;
+ --kimi-color-surface-raised:#ffffff; --kimi-color-surface-strong:#ebebeb;
+ --kimi-color-border:#dcdcdc;
+ --kimi-color-danger:#d5483f; --kimi-color-positive:#2e9e5b; --kimi-color-warning:#d97b1a;
+ --kimi-color-accent:#2f6bff;
+ --kimi-chart-1:#2f6bff; --kimi-chart-2:#d5483f; --kimi-chart-3:#2e9e5b; --kimi-chart-4:#8a5cf6; --kimi-chart-5:#8c8c8c;
+}
+body{margin:0;background:#fafafa;padding:24px}
+.shell{max-width:980px;margin:0 auto;background:var(--kimi-color-surface);border:1px solid var(--kimi-color-border);border-radius:12px;padding:20px 24px}
+</style></head><body><div class="shell">
+<div id="w" style="font-family:var(--kimi-font-sans);color:var(--kimi-color-text-primary)">
+<style>
+#w button,#w input{font:inherit}
+#w svg text{font-family:var(--kimi-font-sans)}
+#w .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+#w .hdr{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid var(--kimi-color-border)}
+#w .ttl{font-size:17px;font-weight:500}
+#w .sub{font-size:12px;color:var(--kimi-color-text-tertiary)}
+#w .pills{display:flex;gap:4px;border:1px solid var(--kimi-color-border);border-radius:8px;padding:2px}
+#w .pills button{border:0;background:transparent;color:var(--kimi-color-text-secondary);padding:4px 10px;border-radius:6px;font-size:13px;cursor:pointer;white-space:nowrap}
+#w .pills button.on{background:var(--kimi-color-text-primary);color:var(--kimi-color-surface)}
+#w .ctrl{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;padding:10px 0;border-bottom:1px solid var(--kimi-color-border)}
+#w .ylab{font-size:13px;font-weight:500;min-width:44px}
+#w input[type=range]{flex:1;min-width:140px;accent-color:var(--kimi-color-text-primary)}
+#w .nav{display:flex;flex-wrap:wrap;gap:4px;padding:10px 0}
+#w .nav button{border:1px solid var(--kimi-color-border);background:transparent;color:var(--kimi-color-text-secondary);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer}
+#w .nav button.on{border-color:var(--kimi-color-text-primary);color:var(--kimi-color-text-primary);font-weight:500}
+#w .stage{padding:8px 0 4px}
+#w .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:8px;margin:8px 0}
+#w .kpi{border:1px solid var(--kimi-color-border);border-radius:10px;padding:10px 12px}
+#w .kpi .v{font-size:24px;font-weight:500;line-height:1.15}
+#w .kpi .l{font-size:12px;color:var(--kimi-color-text-tertiary);margin-top:2px}
+#w h3{font-size:15px;font-weight:500;margin:12px 0 4px}
+#w .note{font-size:12px;color:var(--kimi-color-text-tertiary);padding-top:10px;border-top:1px solid var(--kimi-color-border);margin-top:12px}
+#w .evm{display:flex;gap:16px;flex-wrap:wrap;margin:8px 0}
+#w .evm div{flex:1;min-width:150px;border-left:2px solid var(--kimi-color-border);padding-left:10px}
+#w .evm .v{font-size:22px;font-weight:500}
+#w .evm .l{font-size:12px;color:var(--kimi-color-text-tertiary)}
+#w table{border-collapse:collapse;width:100%;font-size:12px;margin-top:8px}
+#w th,#w td{border-bottom:1px solid var(--kimi-color-border);padding:5px 6px;text-align:right}
+#w th:first-child,#w td:first-child{text-align:left}
+#w th{font-weight:500;color:var(--kimi-color-text-secondary)}
+#w .scendesc{font-size:12px;color:var(--kimi-color-text-tertiary);padding:6px 0 0}
+</style>
+
+<div class="hdr">
+  <div>
+    <div class="ttl">Battery demand &amp; end-of-life materials, 2020–2050</div>
+    <div class="sub">Three futures: analyst consensus, accelerated end-of-life, and Doubling Down — 2030–2040 is the steep section of the S-curve, not a straight line</div>
+  </div>
+  <div class="pills" id="scenPills">
+    <button data-s="C">Analyst consensus</button>
+    <button data-s="A">Accelerated EoL</button>
+    <button data-s="DD" class="on">Doubling Down</button>
+  </div>
+</div>
+<div class="scendesc" id="scenDesc"></div>
+
+<div class="ctrl">
+  <span class="ylab num" id="yearLab">2030</span>
+  <input type="range" id="yr" min="0" max="5" value="2" step="1">
+  <button id="play" style="border:1px solid var(--kimi-color-border);background:transparent;border-radius:6px;padding:4px 12px;font-size:12px;color:var(--kimi-color-text-secondary);cursor:pointer">Play 2020→2050</button>
+  <div class="pills" id="regPills">
+    <button data-r="G" class="on">Global</button><button data-r="CN">China</button><button data-r="ROW">Rest of world</button>
+  </div>
+</div>
+
+<div class="nav" id="nav"></div>
+<div class="stage" id="stage"></div>
+<div class="note">Illustrative modelled figures — Cetacea house view built for discussion, not investment advice. Materials = key metals (lithium LCE, nickel, cobalt, copper, graphite). Plant = 20 ktpa integrated black-mass-to-battery-grade unit, ~US$75M. Re-verify against current market data before external use.</div>
+</div>
+
+<script>
+const YEARS=[2020,2025,2030,2035,2040,2050];
+const D={
+ C:{tot:[0.33,1.45,4.6,7.6,11.5,17.5],ev:[.88,.76,.67,.61,.56,.52],cn:[.60,.56,.51,.46,.42,.37],
+    eol:[.03,.18,.55,1.5,3.5,10],rec:[.03,.06,.10,.16,.24,.34]},
+ A:{tot:[0.35,1.60,7.0,13,23,38],ev:[.86,.73,.63,.56,.51,.47],cn:[.62,.58,.52,.46,.40,.33],
+    eol:[.03,.25,1.3,4.2,9.5,25],rec:[.03,.08,.16,.28,.42,.60]},
+ DD:{tot:[0.35,1.6,8.5,16,28,48],ev:[.86,.72,.62,.55,.48,.42],cn:[.62,.58,.55,.50,.44,.36],
+    eol:[.03,.25,1.6,5.5,14,32],rec:[.03,.08,.20,.50,.60,.68]}};
+const SDESC={
+ C:'Analyst consensus — flat extrapolation; has under-reported battery demand every year since 2020.',
+ A:'Accelerated EoL — larger packs (marine/heavy-truck megapacks), data-centre volumes at deep DoD, deeper cycle rates, harsher asset use. 2030–2040 is the steep section of the S-curve: 7 → 23 TWh, not linear.',
+ DD:'Doubling Down — all of the above plus the 15th FYP circular economy rolling into a 16th FYP fast-track: 50% of battery materials from recovery by 2035. Applied energy of coal, oil and gas replaced; diesel out.'};
+const EVSEC=['Passenger EV','2/3-wheeler','3C & small-format industrial','Commercial vehicle','Heavy industry / mining truck','Marine','Robotics','Automated port fleet'];
+const EVMIX=[[.78,.70,.60,.52,.47,.42],[.12,.13,.13,.12,.10,.08],[.08,.075,.07,.06,.05,.045],[.05,.08,.12,.15,.17,.18],[.02,.045,.08,.12,.15,.17],[.005,.02,.04,.06,.08,.10],[0,.005,.02,.03,.04,.06],[0,.01,.02,.035,.05,.07]];
+for(let j=0;j<6;j++){let s=0;for(let i=0;i<EVMIX.length;i++)s+=EVMIX[i][j];for(let i=0;i<EVMIX.length;i++)EVMIX[i][j]=EVMIX[i][j]/s;}
+const BESSAPP=['Home battery','C&I behind-the-meter','Grid-scale (grid-forming)','Data centre'];
+const BEMIX=[[.45,.38,.30,.24,.20,.16],[.30,.27,.24,.22,.20,.18],[.20,.25,.32,.38,.42,.46],[.05,.10,.14,.16,.18,.20]];
+const CHEM=['LFP','NCM / NCA','Na-ion & other'];
+const CHMIX=[[.38,.52,.62,.63,.60,.55],[.55,.40,.30,.26,.23,.20],[.07,.08,.08,.11,.17,.25]];
+const MAT=['Lithium (LCE)','Nickel','Cobalt','Copper','Graphite'];
+const MINT=[[.85,.85,.82,.80,.78,.75],[.50,.46,.42,.38,.35,.32],[.12,.11,.10,.09,.08,.07],[.55,.55,.56,.56,.57,.57],[1.05,1.06,1.07,1.08,1.09,1.10]];
+const SUP_MINES=[1.1,4.7,7.5,10.0,12.5,16.0];
+const C1='var(--kimi-chart-1)',C2='var(--kimi-chart-2)',C3='var(--kimi-chart-3)',C4='var(--kimi-chart-4)',C5='var(--kimi-chart-5)',GR='var(--kimi-color-text-quaternary)',TP='var(--kimi-color-text-primary)',TS='var(--kimi-color-text-secondary)';
+const mix=(c,p)=>('color-mix(in srgb,'+c+' '+p+'%,transparent)');
+const EVSH=['100','88','76','64','52','40','28','16'].map(p=>mix(C1,p));
+const BESH=['100','72','52','36'].map(p=>mix(C1,p));
+const CHSH=[C1,C3,C4];
+let st={s:'DD',r:'G',y:2,slide:0,playing:false};
+const $=id=>document.getElementById(id);
+const fmt=(v,d=1)=>v.toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:0});
+const kf=()=>st.r==='G'?1:(st.r==='CN'?D[st.s].cn[st.y]:1-D[st.s].cn[st.y]);
+function shareBars(title,items,mixArr,yidx,unit){
+ const rows=items.map(m=>({n:m[0],v:m[1]})).sort((a,b)=>b.v-a.v);
+ const mx=rows[0].v;
+ let h='<h3>'+title+' <span class="sub" style="font-weight:400">'+YEARS[yidx]+'</span></h3><div>';
+ rows.forEach(r=>{const w=Math.max(2,r.v/mx*100);const ci=items.findIndex(x=>x[0]===r.n);
+  h+='<div style="display:flex;align-items:center;gap:8px;margin:4px 0"><div style="width:170px;font-size:13px;color:'+TS+';text-align:right">'+r.n+'</div><div style="flex:1;background:transparent"><div style="width:'+w+'%;height:16px;background:'+mixArr[ci]+';border-radius:4px"></div></div><div class="num" style="width:90px;font-size:13px;font-weight:500">'+fmt(r.v)+' '+unit+'</div></div>';});
+ return h+'</div>';
+}
+function svgOpen(w,h){return '<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;height:auto;display:block">';}
+const SLIDES=[
+ {n:'Three futures',f(){
+  const W=760,H=340,pl=52,pb=34,pt=14,pr=14;
+  const mx=60,y0=H-pb,x0=pl,yw=H-pb-pt,xw=W-pl-pr;
+  const X=i=>x0+xw*i/5,Y=v=>y0-yw*v/mx;
+  let g=svgOpen(W,H);
+  for(let v=0;v<=60;v+=10)g+='<line x1="'+x0+'" y1="'+Y(v)+'" x2="'+(W-pr)+'" y2="'+Y(v)+'" stroke="'+GR+'" stroke-width="0.5"/><text x="'+(x0-6)+'" y="'+(Y(v)+4)+'" text-anchor="end" font-size="11" fill="'+GR+'">'+v+'</text>';
+  YEARS.forEach((yr,i)=>g+='<text x="'+X(i)+'" y="'+(H-12)+'" text-anchor="middle" font-size="11" fill="'+GR+'">'+yr+'</text>');
+  const line=(arr,col,dash,w)=>{let p='';arr.forEach((v,i)=>p+=(i?'L':'M')+X(i)+' '+Y(v)+' ');
+   g+='<path d="'+p+'" fill="none" stroke="'+col+'" stroke-width="'+(w||2.5)+'"'+(dash?' stroke-dasharray="6 4"':'')+'/>';};
+  line(D.C.tot,C5,true,2);line(D.A.tot,C1,false,2.5);line(D.DD.tot,TP,false,3.5);
+  YEARS.forEach((yr,i)=>{g+='<circle cx="'+X(i)+'" cy="'+Y(D.DD.tot[i])+'" r="4" fill="'+TP+'"/><circle cx="'+X(i)+'" cy="'+Y(D.A.tot[i])+'" r="3" fill="'+C1+'"/><circle cx="'+X(i)+'" cy="'+Y(D.C.tot[i])+'" r="2.5" fill="'+C5+'"/>';});
+  const yx=X(st.y);g+='<line x1="'+yx+'" y1="'+pt+'" x2="'+yx+'" y2="'+y0+'" stroke="'+TP+'" stroke-width="1" stroke-dasharray="3 3"/>';
+  const hx=X(1)+(X(2)-X(1))*0.2;
+  g+='<line x1="'+hx+'" y1="'+pt+'" x2="'+hx+'" y2="'+y0+'" stroke="'+C2+'" stroke-width="1.5"/><text x="'+(hx+4)+'" y="'+(pt+10)+'" font-size="11" fill="'+C2+'">2026 Hormuz factor →</text>';
+  g+='<text x="'+(X(5)-4)+'" y="'+(Y(55)-10)+'" text-anchor="end" font-size="12" font-weight="500" fill="'+TP+'">Doubling Down — 55 TWh (2050)</text>';
+  g+='<text x="'+(X(4)-30)+'" y="'+(Y(23)-10)+'" font-size="12" fill="'+C1+'">Accelerated EoL — 38 TWh</text>';
+  g+='<text x="'+(X(5)-4)+'" y="'+(Y(17.5)+22)+'" text-anchor="end" font-size="12" fill="'+C5+'">Analyst consensus — 17.5 TWh</text>';
+  g+='<text x="'+(W/2)+'" y="'+(H-1)+'" text-anchor="middle" font-size="11" fill="'+GR+'">Global battery demand, TWh</text></svg>';
+  const t=D[st.s].tot[st.y];
+  return '<h3>One system, three trajectories</h3>'+g+'<div class="sub" style="margin:4px 0 8px">The 2030–2040 leg is the steep section of the S-curve: marine and heavy-truck megapacks, data-centre storage at deep DoD, and harsher asset use from lifestyle change re-rate demand every cycle.</div><div class="kpis">'
+   +kpi(fmt(t),'Total demand TWh, '+YEARS[st.y]+(st.r!=='G'?' ('+(st.r==='CN'?'China':'ROW')+')':''))
+   +kpi(fmt(t*D[st.s].ev[st.y]),'EV demand TWh')
+   +kpi(fmt(t*(1-D[st.s].ev[st.y])),'BESS demand TWh')
+   +kpi(fmt(D[st.s].eol[st.y]*1000),'EoL feedstock GWh')
+   +kpi(Math.round(D[st.s].rec[st.y]*100)+'%','Materials from recovery')
+   +kpi(fmt(t*kf()),'… of which '+(st.r==='CN'?'China':'this region')+' TWh')+'</div>';
+ }},
+ {n:'EV sectors',f(){
+  const t=D[st.s].tot[st.y],ev=t*D[st.s].ev[st.y];
+  const items=EVSEC.map((n,i)=>[n,ev*EVMIX[i][st.y]*kf()]);
+  return '<h3>All EV sectors — demand by segment</h3>'+shareBars('EV demand by sector',items,EVSH,st.y,'TWh')
+   +'<div class="sub" style="margin-top:8px">Re-rating drivers: marine and heavy-truck megapacks (2–5× passenger pack size), automated port fleets, robotics — harsher duty cycles and lifestyle-driven use intensity lift volumes and deepen degradation. Diesel-broken economics electrify the heavy segments first. Region selector applies.</div>';
+ }},
+ {n:'BESS applications',f(){
+  const t=D[st.s].tot[st.y],b=t*(1-D[st.s].ev[st.y]);
+  const items=BESSAPP.map((n,i)=>[n,b*BEMIX[i][st.y]*kf()]);
+  return '<h3>All BESS applications — demand by segment</h3>'+shareBars('BESS demand by application',items,BESH,st.y,'TWh')
+   +'<div class="sub" style="margin-top:8px">Data centres are the re-rated block: AI load growth at deep DoD and high cycle counts. Grid-forming storage absorbs the coal/gas retirement wave; home batteries follow rooftop PV (Australia proof market: doubled pack size under rebate).</div>';
+ }},
+ {n:'Chemistry trends',f(){
+  const W=760,H=270,pl=44,pb=30,pt=16,pr=10,y0=H-pb,x0=pl,yw=H-pb-pt,xw=W-pl-pr;
+  const X=i=>x0+xw*i/5,bw=xw/6*0.62;let g=svgOpen(W,H);
+  YEARS.forEach((yr,i)=>{let acc=0;
+   CHEM.forEach((c,j)=>{const v=CHMIX[j][i],h=yw*v;
+    g+='<rect x="'+(X(i)-bw/2)+'" y="'+(y0-acc-h)+'" width="'+bw+'" height="'+Math.max(0,h-0.5)+'" fill="'+CHSH[j]+'"/>';
+    if(v>.06)g+='<text x="'+X(i)+'" y="'+(y0-acc-h/2+4)+'" text-anchor="middle" font-size="10" fill="#fff">'+Math.round(v*100)+'%</text>';
+    acc+=h;});});
+  YEARS.forEach((yr,i)=>g+='<text x="'+X(i)+'" y="'+(H-10)+'" text-anchor="middle" font-size="11" fill="'+GR+'">'+yr+'</text>');
+  let lx=x0;CHEM.forEach((c,j)=>{g+='<rect x="'+lx+'" y="2" width="10" height="10" rx="2" fill="'+CHSH[j]+'"/><text x="'+(lx+14)+'" y="11" font-size="11" fill="'+TS+'">'+c+'</text>';lx+=14+c.length*6.4+18;});
+  g+='<text x="'+(x0-6)+'" y="'+(pt+4)+'" text-anchor="end" font-size="11" fill="'+GR+'">100%</text></svg>';
+  return '<h3>Chemistry mix of new installs</h3>'+g+'<div class="sub">LFP dominates transport and storage (China-scale LFP capacity is the enabler); NCM/NCA holds premium long-range; Na-ion absorbs the cost-sensitive tail. A 50%-recovery system is chemistry-agnostic — the 15th FYP circular-economy framing covers all streams.</div>';
+ }},
+ {n:'Materials required',f(){
+  const t=D[st.s].tot[st.y]*kf();
+  const items=MAT.map((n,i)=>[n,t*MINT[i][st.y]]);
+  return '<h3>Battery materials required — '+YEARS[st.y]+' · '+(st.r==='G'?'Global':st.r==='CN'?'China':'Rest of world')+'</h3>'+shareBars('Key metals demand, Mt',items,['100','72','52','36','20'].map(p=>mix(C1,p)),st.y,'Mt')
+   +'<div class="sub" style="margin-top:8px">Non-linear demand compounds here: 2035 materials demand in the accelerated case is ~2× consensus (13 TWh vs 7.6 TWh of cells) — which is exactly why the 16th FYP recovery fast-track matters: without it, virgin-mined supply and import dependence scale with the steep part of the curve.</div>';
+ }},
+ {n:'Materials balance',f(){
+  const W=760,H=310,pl=56,pb=34,pt=16,pr=14,y0=H-pb,x0=pl,yw=H-pb-pt,xw=W-pl-pr;
+  const dem=YEARS.map((_,i)=>D[st.s].tot[i]*MINT.reduce((a,m)=>a+m[i],0));
+  const sup=SUP_MINES;
+  const recy=dem.map((d,i)=>d*D[st.s].rec[i]);
+  const mx=115,X=i=>x0+xw*i/5,Y=v=>y0-yw*v/mx,bw=xw/6*0.5;
+  let g=svgOpen(W,H);
+  for(let v=0;v<=mx;v+=20){g+='<line x1="'+x0+'" y1="'+Y(v)+'" x2="'+(W-pr)+'" y2="'+Y(v)+'" stroke="'+GR+'" stroke-width="0.5"/><text x="'+(x0-6)+'" y="'+(Y(v)+4)+'" text-anchor="end" font-size="11" fill="'+GR+'">'+v+'</text>';}
+  YEARS.forEach((yr,i)=>{
+   g+='<rect x="'+(X(i)-bw/2)+'" y="'+Y(sup[i])+'" width="'+bw+'" height="'+Math.max(0,y0-Y(sup[i]))+'" fill="'+C5+'" rx="3"/>';
+   g+='<rect x="'+(X(i)-bw/2)+'" y="'+Y(sup[i]+recy[i])+'" width="'+bw+'" height="'+Math.max(0,Y(sup[i])-Y(sup[i]+recy[i]))+'" fill="'+C1+'" rx="3"/>';
+   if(i>=2)g+='<rect x="'+(X(i)-bw/2)+'" y="'+pt+'" width="'+bw+'" height="'+Math.max(0,Y(sup[i]+recy[i])-pt)+'" fill="'+C2+'" opacity="0.08"/>';
+  });
+  let dp='';dem.forEach((v,i)=>dp+=(i?'L':'M')+X(i)+' '+Y(v)+' ');
+  g+='<path d="'+dp+'" fill="none" stroke="'+C2+'" stroke-width="3"/>';
+  dem.forEach((v,i)=>g+='<circle cx="'+X(i)+'" cy="'+Y(v)+'" r="3.5" fill="'+C2+'"/><text x="'+X(i)+'" y="'+(Y(v)-8)+'" text-anchor="middle" font-size="10.5" font-weight="600" fill="'+C2+'" class="num">'+fmt(v,0)+'</text>');
+  YEARS.forEach((yr,i)=>g+='<text x="'+X(i)+'" y="'+(H-12)+'" text-anchor="middle" font-size="11" fill="'+GR+'">'+yr+'</text>');
+  g+='<text x="'+(x0-6)+'" y="'+(pt+4)+'" text-anchor="end" font-size="10" fill="'+GR+'">Mt</text>';
+  g+='<rect x="'+x0+'" y="0" width="10" height="10" rx="2" fill="'+C5+'"/><text x="'+(x0+14)+'" y="9" font-size="11" fill="'+TS+'">Mines (existing + committed)</text>';
+  g+='<rect x="'+(x0+192)+'" y="0" width="10" height="10" rx="2" fill="'+C1+'"/><text x="'+(x0+206)+'" y="9" font-size="11" fill="'+TS+'">Recovery</text>';
+  g+='<line x1="'+(x0+272)+'" y1="5" x2="'+(x0+297)+'" y2="5" stroke="'+C2+'" stroke-width="3"/><text x="'+(x0+303)+'" y="9" font-size="11" fill="'+TS+'">Materials demand</text></svg>';
+  const i=st.y;
+  const gap=Math.max(0,dem[i]-sup[i]-recy[i]);
+  return '<h3>Materials balance: demand vs mine supply</h3>'+g
+   +'<div class="evm">'
+   +'<div><div class="v num">'+fmt(dem[i],0)+' Mt</div><div class="l">materials demand, '+YEARS[i]+' ('+(st.s==='C'?'consensus':st.s==='A'?'accelerated':'doubling down')+')</div></div>'
+   +'<div><div class="v num">'+fmt(sup[i]+recy[i],0)+' Mt</div><div class="l">mine supply + recovery</div></div>'
+   +'<div><div class="v num" style="color:var(--kimi-chart-2)">'+fmt(gap,0)+' Mt</div><div class="l">unmet — the structural deficit</div></div></div>'
+   +'<div class="sub">Current NCM/LFP mine supply cannot meet this curve. Three levers close the gap: <b>(1) recovery fast-track</b> — 50% of materials from recovery by 2035, the 16th FYP path; <b>(2) Alternative storage in the stationary layer</b> — Na-ion, vanadium flow, pumped hydro and compressed air absorb bulk and long-duration demand, freeing lithium and LFP for transport and mobility; <b>(3) new mine supply</b> — 10–15 year lead times the deficit will price in. Hydrogen / metal-hydride storage covers the seasonal layer after 2035.</div>';
+ }},
+ {n:'Virgin vs recovered',f(){
+  const W=760,H=300,pl=52,pb=30,pt=14,pr=14,y0=H-pb,x0=pl,yw=H-pb-pt,xw=W-pl-pr;
+  const tot=y=>D[st.s].tot[y]*1000*MINT.reduce((a,m)=>a+m[y],0)/1000;
+  const mx=Math.max(...YEARS.map((_,i)=>tot(i)));const X=i=>x0+xw*i/5,Y=v=>y0-yw*v/mx;
+  const vir=YEARS.map((_,i)=>tot(i)*(1-D[st.s].rec[i])),rec=YEARS.map((_,i)=>tot(i)*D[st.s].rec[i]);
+  let g=svgOpen(W,H);
+  for(let f=0;f<=1.001;f+=.25){const v=mx*f;g+='<line x1="'+x0+'" y1="'+Y(v)+'" x2="'+(W-pr)+'" y2="'+Y(v)+'" stroke="'+GR+'" stroke-width="0.5"/><text x="'+(x0-6)+'" y="'+(Y(v)+4)+'" text-anchor="end" font-size="11" fill="'+GR+'">'+fmt(v,0)+'</text>';}
+  let p1='',p2='';YEARS.forEach((_,i)=>{p1+=(i?'L':'M')+X(i)+' '+Y(vir[i])+' ';p2+=(i?'L':'M')+X(i)+' '+Y(vir[i]+rec[i])+' ';});
+  const rev=YEARS.map((_,i)=>X(5-i)+' '+Y(0)).join(' L');
+  g+='<path d="'+p1+' L'+rev+'" fill="'+mix(C5,45)+'" stroke="none"/><path d="'+p2+' L'+rev+'" fill="'+mix(C1,55)+'" stroke="none"/><path d="'+p1+'" fill="none" stroke="'+C5+'" stroke-width="2"/><path d="'+p2+'" fill="none" stroke="'+C1+'" stroke-width="2"/>';
+  YEARS.forEach((_,i)=>{g+='<text x="'+X(i)+'" y="'+(H-10)+'" text-anchor="middle" font-size="11" fill="'+GR+'">'+YEARS[i]+'</text>';if(i>0)g+='<text x="'+X(i)+'" y="'+(Y(vir[i]+rec[i]/2)+4)+'" text-anchor="middle" font-size="10" fill="#fff">'+Math.round(D[st.s].rec[i]*100)+'%</text>';});
+  g+='<rect x="'+x0+'" y="2" width="10" height="10" rx="2" fill="'+C5+'"/><text x="'+(x0+14)+'" y="11" font-size="11" fill="'+TS+'">Virgin mined</text><rect x="'+(x0+110)+'" y="2" width="10" height="10" rx="2" fill="'+C1+'"/><text x="'+(x0+124)+'" y="11" font-size="11" fill="'+TS+'">Battery materials recovery</text>';
+  const yx=X(st.y);g+='<line x1="'+yx+'" y1="'+pt+'" x2="'+yx+'" y2="'+y0+'" stroke="'+TP+'" stroke-width="1" stroke-dasharray="3 3"/></svg>';
+  return '<h3>Materials supply: the virgin → recovered crossover</h3>'+g
+   +'<div class="sub">'+ (st.s==='DD'
+    ? 'Doubling Down: the 15th FYP circular-economy rollout feeds a 16th FYP fast-track — recovery targets 50% of battery-materials supply by 2035, ~70% by 2050. The crossover happens inside the 16th FYP window, not after it.'
+    : 'Recovered share: '+Math.round(D[st.s].rec[st.y]*100)+'% in '+YEARS[st.y]+' ('+(st.s==='A'?'accelerated':'consensus')+').') +'</div>';
+ }},
+ {n:'Plants & investment',f(){
+  const W=760,H=310,pl=52,pb=30,pt=16,pr=52,y0=H-pb,x0=pl,yw=H-pb-pt,xw=W-pl-pr;
+  const plants=YEARS.map((_,i)=>Math.round(D[st.s].eol[i]*1000/4.5));
+  let cum=[],c=0;for(let i=0;i<6;i++){c+=(plants[i]-(i?plants[i-1]:0))*0.075;cum.push(c);}
+  const mx=9000,Y=v=>y0-yw*v/mx,X=i=>x0+xw*i/5,bw=xw/6*0.5;
+  const Y2=v=>y0-yw*v/cum[5];
+  let g=svgOpen(W,H);
+  for(let v=0;v<=mx;v+=3000)g+='<line x1="'+x0+'" y1="'+Y(v)+'" x2="'+(W-pr)+'" y2="'+Y(v)+'" stroke="'+GR+'" stroke-width="0.5"/><text x="'+(x0-6)+'" y="'+(Y(v)+4)+'" text-anchor="end" font-size="11" fill="'+GR+'">'+v+'</text>';
+  YEARS.forEach((_,i)=>{g+='<rect x="'+(X(i)-bw/2)+'" y="'+Y(plants[i])+'" width="'+bw+'" height="'+Math.max(0,y0-Y(plants[i]))+'" rx="3" fill="'+mix(C1,i===st.y?100:55)+'"/><text x="'+X(i)+'" y="'+(Y(plants[i])-5)+'" text-anchor="middle" font-size="11" font-weight="500" fill="'+TP+'" class="num">'+plants[i].toLocaleString()+'</text>';});
+  let p='';cum.forEach((v,i)=>p+=(i?'L':'M')+X(i)+' '+Y2(v)+' ');
+  g+='<path d="'+p+'" fill="none" stroke="'+C3+'" stroke-width="2.5"/>';
+  cum.forEach((v,i)=>g+='<circle cx="'+X(i)+'" cy="'+Y2(v)+'" r="3" fill="'+C3+'"/>');
+  g+='<text x="'+(W-4)+'" y="'+(Y2(cum[5])-8)+'" text-anchor="end" font-size="11" fill="'+C3+'" font-weight="500" class="num">US$'+fmt(cum[5],0)+'B cumulative</text>';
+  YEARS.forEach((yr,i)=>g+='<text x="'+X(i)+'" y="'+(H-10)+'" text-anchor="middle" font-size="11" fill="'+GR+'">'+yr+'</text>');
+  g+='<text x="'+(x0-6)+'" y="'+(pt+2)+'" text-anchor="end" font-size="10" fill="'+GR+'">plants</text></svg>';
+  return '<h3>Recovery capacity: plants required and investment</h3>'+g
+   +'<div class="evm"><div><div class="v num">'+plants[st.y].toLocaleString()+'</div><div class="l">20 ktpa integrated plants operating, '+YEARS[st.y]+'</div></div>'
+   +'<div><div class="v num">US$'+fmt(cum[st.y],0)+'B</div><div class="l">Cumulative build-out investment to '+YEARS[st.y]+'</div></div>'
+   +'<div><div class="v num">'+plants[5].toLocaleString()+'</div><div class="l">Plants needed by 2050 ('+(st.s==='C'?'consensus':st.s==='A'?'accelerated':'doubling down')+')</div></div></div>'
+   +'<div class="sub">Megapacks and deep-DoD cycling shorten asset life — so every upward re-rating of demand is also an upward re-rating of EoL feedstock. The build-out is a 16th FYP-scale industrial programme, and the natural home for green manufacturing credit, ZCF-linked finance and the certification layer.</div>';
+ }},
+ {n:'Hormuz factor',f(){
+  const cats=['EV sales','PV installs','BESS installs','Diesel gensets'],a=[100,100,100,100],b=[138,130,155,62];
+  const mx=170;let rows='';
+  cats.forEach((c,i)=>{rows+='<div style="display:flex;align-items:center;gap:8px;margin:5px 0"><div style="width:110px;font-size:13px;color:'+TS+';text-align:right">'+c+'</div><div style="flex:1;display:flex;gap:3px;align-items:flex-end;height:22px"><div style="width:'+(a[i]/mx*100)+'%;height:14px;background:'+C5+';border-radius:3px"></div><div style="width:'+(b[i]/mx*100)+'%;height:20px;background:'+(i===3?C2:C1)+';border-radius:3px"></div></div><div class="num" style="width:64px;font-size:13px;font-weight:500;color:'+(i===3?C2:TP)+'">'+(i===3?'−38%':'+'+(b[i]-100)+'%')+'</div></div>';});
+  return '<h3>2026 — the Hormuz factor</h3>'
+   +'<div class="evm">'
+   +'<div><div class="v">Diesel broken</div><div class="l">Strait of Hormuz disruption repriced liquid fuel security. Diesel operating economics flipped — fleets, ports and mines accelerated electrification.</div></div>'
+   +'<div><div class="v num">+38%</div><div class="l">Global EV sales spike, 2026 vs 2025</div></div>'
+   +'<div><div class="v num">+55%</div><div class="l">Global BESS installs spike — diesel genset displacement becomes the largest new demand block</div></div>'
+   +'<div><div class="v num">+30%</div><div class="l">Solar PV installs spike — the generation side of the storage build-out</div></div></div>'
+   +'<div class="sub">Index: 2025 = 100 (illustrative post-event reads)</div>'+rows
+   +'<div class="sub" style="margin-top:8px">In this model Hormuz is not a one-off spike — it is the pilot run. Diesel is written out of the applied-energy stack, and each re-base compounds: harsher asset use → deeper cycling → faster end-of-life → more recovery feedstock into the 16th FYP fast-track.</div>';
+ }},
+ {n:'The gap',f(){
+  const inv=s=>{let c=[],cc=0,pc=0;for(let i=0;i<6;i++){const p=Math.round(s.eol[i]*1000/4.5);cc+=(p-pc)*0.075;pc=p;c.push(cc);}return c;};
+  const invC=inv(D.C),invA=inv(D.A),invD=inv(D.DD);
+  const rows=[['Total demand (TWh)','tot',1],['EoL feedstock (GWh)','eol',1000],['Materials from recovery (%)','rec',100],['Plants operating','eol',1/4.5*1000],['Cumulative investment (US$B)','inv',1]];
+  const val=(r,f,i)=>r[1]==='inv'?f[i]:(r[1]==='rec'?Math.round(f[r[1]][i]*100):fmt(f[r[1]][i]*r[2],f[r[1]][i]*r[2]<20?1:0));
+  let h='<h3>Three futures — the gap at a glance</h3><table><tr><th>Metric</th><th>2030</th><th>2035</th><th>2050</th><th>2030</th><th>2035</th><th>2050</th><th>2030</th><th>2035</th><th>2050</th></tr><tr><th></th><th colspan="3" style="text-align:center;color:'+C5+'">Consensus</th><th colspan="3" style="text-align:center;color:'+C1+'">Accelerated</th><th colspan="3" style="text-align:center;color:'+TP+'">Doubling Down</th></tr>';
+  rows.forEach(r=>{h+='<tr><td>'+r[0]+'</td>';
+   [2,3,5].forEach(i=>h+='<td class="num">'+val(r,D.C,i)+'</td>');
+   [2,3,5].forEach(i=>h+='<td class="num" style="color:'+C1+'">'+val(r,D.A,i)+'</td>');
+   [2,3,5].forEach(i=>h+='<td class="num" style="color:'+TP+';font-weight:500">'+val(r,D.DD,i)+'</td>');
+   h+='</tr>';});
+  return h+'</table><div class="sub" style="margin-top:8px">Non-linear logic: megapacks and data-centre storage re-rate 2030–2040 demand; deeper DoD and harsher asset use (lifestyle change across all markets) compress asset life, so EoL volumes accelerate faster than installs. On top: 15th FYP circular economy → 16th FYP fast-track to 50% recovery by 2035; alternative storage (Na-ion, flow, pumped hydro, CAES) in stationary frees lithium for transport; coal, oil and gas applied energy replaced; diesel out.</div>';
+ }}
+];
+function kpi(v,l){return '<div class="kpi"><div class="v num">'+v+'</div><div class="l">'+l+'</div></div>';}
+function render(){
+ $('yearLab').textContent=YEARS[st.y];
+ $('scenDesc').textContent=SDESC[st.s];
+ document.querySelectorAll('#scenPills button').forEach(b=>b.classList.toggle('on',b.dataset.s===st.s));
+ document.querySelectorAll('#regPills button').forEach(b=>b.classList.toggle('on',b.dataset.r===st.r));
+ $('nav').innerHTML=SLIDES.map((s2,i)=>'<button class="'+(i===st.slide?'on':'')+'" data-i="'+i+'">'+(i+1)+'. '+s2.n+'</button>').join('');
+ $('stage').innerHTML=SLIDES[st.slide].f();
+}
+document.querySelectorAll('#scenPills button').forEach(b=>b.onclick=()=>{st.s=b.dataset.s;render();});
+document.querySelectorAll('#regPills button').forEach(b=>b.onclick=()=>{st.r=b.dataset.r;render();});
+$('nav').addEventListener('click',e=>{const b=e.target.closest('button');if(b){st.slide=+b.dataset.i;render();}});
+$('yr').addEventListener('input',e=>{st.y=+e.target.value;render();});
+let tm=null;
+$('play').onclick=()=>{if(st.playing){clearInterval(tm);st.playing=false;$('play').textContent='Play 2020→2050';return;}
+ st.playing=true;$('play').textContent='Stop';st.y=0;
+ tm=setInterval(()=>{if(st.y>=5){clearInterval(tm);st.playing=false;$('play').textContent='Play 2020→2050';}$('yr').value=st.y;render();st.y++;},1100);};
+render();
+</script></div></body></html>

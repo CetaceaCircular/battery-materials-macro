@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Battery demand and EoL materials 2020-2050 - three futures (Cetacea house view)</title>
+<style>
+:root{
+ --kimi-font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+ --kimi-font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+ --kimi-color-text-primary:#1a1a1a; --kimi-color-text-secondary:#4d4d4d;
+ --kimi-color-text-tertiary:#737373; --kimi-color-text-quaternary:#a6a6a6;
+ --kimi-color-surface:#ffffff; --kimi-color-surface-muted:#f5f5f5;
+ --kimi-color-surface-raised:#ffffff; --kimi-color-surface-strong:#ebebeb;
+ --kimi-color-border:#dcdcdc;
+ --kimi-color-danger:#d5483f; --kimi-color-positive:#2e9e5b; --kimi-color-warning:#d97b1a;
+ --kimi-color-accent:#2f6bff;
+ --kimi-chart-1:#2f6bff; --kimi-chart-2:#d5483f; --kimi-chart-3:#2e9e5b; --kimi-chart-4:#8a5cf6; --kimi-chart-5:#8c8c8c;
+}
+body{margin:0;background:#fafafa;padding:24px}
+.shell{max-width:980px;margin:0 auto;background:var(--kimi-color-surface);border:1px solid var(--kimi-color-border);border-radius:12px;padding:20px 24px}
+</style></head><body><div class="shell">
+<div id="w" style="font-family:var(--kimi-font-sans);color:var(--kimi-color-text-primary)">
+<style>
+#w button,#w input{font:inherit}
+#w svg text{font-family:var(--kimi-font-sans)}
+#w .num{font-variant-numeric:tabular-nums}
+#w .hdr{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid var(--kimi-color-border)}
+#w .ttl{font-size:17px;font-weight:500}
+#w .sub{font-size:12px;color:var(--kimi-color-text-tertiary)}
+#w .pills{display:flex;gap:4px;border:1px solid var(--kimi-color-border);border-radius:8px;padding:2px}
+#w .pills button{border:0;background:transparent;color:var(--kimi-color-text-secondary);padding:4px 10px;border-radius:6px;font-size:13px;cursor:pointer;white-space:nowrap}
+#w .pills button.on{background:var(--kimi-color-text-primary);color:var(--kimi-color-surface)}
+#w .ctrl{display:flex;gap:16px;align-items:center;padding:10px 0;border-bottom:1px solid var(--kimi-color-border)}
+#w .ylab{font-size:14px;font-weight:600;min-width:48px}
+#w input[type=range]{flex:1;accent-color:var(--kimi-color-text-primary)}
+#w .body{display:flex;gap:16px;padding-top:12px;flex-wrap:wrap}
+#w .chart{flex:2;min-width:420px}
+#w .side{flex:1;min-width:220px}
+#w .seg{display:flex;align-items:center;gap:8px;margin:5px 0;font-size:13px}
+#w .seg .sw{width:12px;height:12px;border-radius:3px;flex:none}
+#w .seg .n{flex:1;color:var(--kimi-color-text-secondary)}
+#w .seg .v{font-weight:600}
+#w .note{font-size:12px;color:var(--kimi-color-text-tertiary);padding-top:10px;border-top:1px solid var(--kimi-color-border);margin-top:12px}
+</style>
+
+<div class="hdr">
+  <div>
+    <div class="ttl">EV transport battery volume by sub-sector</div>
+    <div class="sub">Pack volume (TWh) — from 3 kWh 2/3-wheeler packs to MWh-class marine tug swap packs · scenario × region × year</div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <div class="pills" id="scenPills">
+      <button data-s="C">Consensus</button><button data-s="A">Accelerated</button><button data-s="DD" class="on">Doubling Down</button>
+    </div>
+    <div class="pills" id="regPills">
+      <button data-r="G" class="on">Global</button><button data-r="CN">China</button><button data-r="ROW">ROW</button>
+    </div>
+  </div>
+</div>
+
+<div class="ctrl">
+  <span class="ylab num" id="yearLab">2035</span>
+  <input type="range" id="yr" min="0" max="5" value="3" step="1">
+  <button id="play" style="border:1px solid var(--kimi-color-border);background:transparent;border-radius:6px;padding:4px 12px;font-size:12px;color:var(--kimi-color-text-secondary);cursor:pointer">Play 2020→2050</button>
+</div>
+
+<div class="body">
+  <div class="chart" id="chart"></div>
+  <div class="side">
+    <div class="sub" id="sideTitle" style="margin-bottom:6px"></div>
+    <div id="segList"></div>
+  </div>
+</div>
+<div class="note">Field note (China, Oct 2026): new port investments across China–SCO/BRI corridors (Beibu Gulf–Kuantan, Myanmar, Cambodia) are being specified green, autonomous, electric, swap-enabled, fed by local renewables + storage — the marine and automated-port classes here are likely the conservative side. Modelled on the Cetacea demand model; illustrative figures.</div>
+</div>
+
+<script>
+const YEARS=[2020,2025,2030,2035,2040,2050];
+const D={
+ C:{tot:[0.33,1.45,4.6,7.6,11.5,17.5],ev:[.88,.76,.67,.61,.56,.52],cn:[.60,.56,.51,.46,.42,.37]},
+ A:{tot:[0.35,1.60,7.0,13,23,38],ev:[.86,.73,.63,.56,.51,.47],cn:[.62,.58,.52,.46,.40,.33]},
+ DD:{tot:[0.35,1.7,9.5,19,34,55],ev:[.86,.72,.62,.55,.48,.42],cn:[.62,.58,.55,.50,.44,.36]}};
+const SEC=['Passenger EV','2/3-wheeler','3C & small-format','Commercial vehicle','Heavy industry / mining','Marine','Robotics','Automated port fleet'];
+const MIX=[[.78,.70,.60,.52,.47,.42],[.12,.13,.13,.12,.10,.08],[.08,.075,.07,.06,.05,.045],[.05,.08,.12,.15,.17,.18],[.02,.045,.08,.12,.15,.17],[.005,.02,.04,.06,.08,.10],[0,.005,.02,.03,.04,.06],[0,.01,.02,.035,.05,.07]];
+for(let j=0;j<6;j++){let s=0;for(let i=0;i<MIX.length;i++)s+=MIX[i][j];for(let i=0;i<MIX.length;i++)MIX[i][j]=MIX[i][j]/s;}
+const C1='var(--kimi-chart-1)',GR='var(--kimi-color-text-quaternary)',TP='var(--kimi-color-text-primary)',TS='var(--kimi-color-text-secondary)';
+const mix=(c,p)=>('color-mix(in srgb,'+c+' '+p+'%,transparent)');
+const SH=['100','88','76','64','52','40','28','16'].map(p=>mix(C1,p));
+let st={s:'DD',r:'G',y:3,playing:false};
+const $=id=>document.getElementById(id);
+const fmt=(v,d=1)=>v.toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:0});
+const kf=y=>st.r==='G'?1:(st.r==='CN'?D[st.s].cn[y]:1-D[st.s].cn[y]);
+function render(){
+ const s=D[st.s];
+ $('yearLab').textContent=YEARS[st.y];
+ document.querySelectorAll('#scenPills button').forEach(b=>b.classList.toggle('on',b.dataset.s===st.s));
+ document.querySelectorAll('#regPills button').forEach(b=>b.classList.toggle('on',b.dataset.r===st.r));
+ const mx=24;
+ const W=680,H=400,pl=52,pb=36,pt=14,pr=10,y0=H-pb,x0=pl,yw=H-pb-pt,xw=W-pl-pr;
+ const X=i=>x0+xw*(i+0.5)/6, bw=xw/6*0.56, Y=v=>y0-yw*v/mx;
+ let g='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block">';
+ for(let v=0;v<=24;v+=4){g+='<line x1="'+x0+'" y1="'+Y(v)+'" x2="'+(W-pr)+'" y2="'+Y(v)+'" stroke="'+GR+'" stroke-width="0.5"/><text x="'+(x0-6)+'" y="'+(Y(v)+4)+'" text-anchor="end" font-size="11" fill="'+GR+'">'+v+'</text>';}
+ g+='<text x="'+(x0-6)+'" y="'+(pt-1)+'" text-anchor="end" font-size="10" fill="'+GR+'">TWh</text>';
+ for(let i=0;i<6;i++){
+  const evT=s.tot[i]*s.ev[i]*kf(i); let acc=0;
+  SEC.forEach((n,j)=>{const v=evT*MIX[j][i],h=yw*v/mx;
+   g+='<rect x="'+(X(i)-bw/2)+'" y="'+(Y(acc+v))+'" width="'+bw+'" height="'+Math.max(0,h-0.4)+'" rx="1.5" fill="'+SH[j]+'"'+(i===st.y?' stroke="'+TP+'" stroke-width="1.2"':'')+'/>';
+   acc+=v;});
+  g+='<text x="'+X(i)+'" y="'+(Y(acc)-6)+'" text-anchor="middle" font-size="11.5" font-weight="600" fill="'+TP+'" class="num">'+fmt(acc,acc<10?1:0)+'</text>';
+  g+='<text x="'+X(i)+'" y="'+(H-12)+'" text-anchor="middle" font-size="11" fill="'+(i===st.y?TP:GR)+'" font-weight="'+(i===st.y?'600':'400')+'">'+YEARS[i]+'</text>';
+ }
+ g+='</svg>';
+ $('chart').innerHTML=g;
+ $('sideTitle').textContent=YEARS[st.y]+' · '+(st.r==='G'?'Global':st.r==='CN'?'China':'Rest of world')+' · '+(st.s==='C'?'Consensus':st.s==='A'?'Accelerated':'Doubling Down');
+ const evT=s.tot[st.y]*s.ev[st.y]*kf(st.y);
+ const rows=SEC.map((n,j)=>({n:n,v:evT*MIX[j][st.y],c:SH[j]})).sort((a,b)=>b.v-a.v);
+ let h='';
+ rows.forEach(r=>{
+  h+='<div class="seg"><div class="sw" style="background:'+r.c+'"></div><div class="n">'+r.n+'</div><div class="v num">'+fmt(r.v,r.v<1?2:1)+' TWh</div></div>';
+ });
+ const mp=rows.filter(r=>r.n==='Marine'||r.n==='Automated port fleet').reduce((a,r)=>a+r.v,0);
+ const tw=rows.filter(r=>r.n==='2/3-wheeler')[0].v;
+ h+='<div class="seg" style="border-top:1px solid var(--kimi-color-border);padding-top:6px;margin-top:6px"><div class="n" style="color:'+TP+';font-weight:600">Marine + ports</div><div class="v num" style="color:'+TP+'">'+fmt(mp,2)+' TWh ('+fmt(mp/evT*100,0)+'%)</div></div>';
+ h+='<div class="seg"><div class="n" style="font-weight:600">2/3-wheelers</div><div class="v num">'+fmt(tw,2)+' TWh ('+fmt(tw/evT*100,0)+'%)</div></div>';
+ $('segList').innerHTML=h;
+}
+document.querySelectorAll('#scenPills button').forEach(b=>b.onclick=()=>{st.s=b.dataset.s;render();});
+document.querySelectorAll('#regPills button').forEach(b=>b.onclick=()=>{st.r=b.dataset.r;render();});
+$('yr').addEventListener('input',e=>{st.y=+e.target.value;render();});
+let tm=null;
+$('play').onclick=()=>{if(st.playing){clearInterval(tm);st.playing=false;$('play').textContent='Play 2020→2050';return;}
+ st.playing=true;$('play').textContent='Stop';st.y=0;
+ tm=setInterval(()=>{if(st.y>=5){clearInterval(tm);st.playing=false;$('play').textContent='Play 2020→2050';}$('yr').value=st.y;render();st.y++;},1100);};
+render();
+</script></div></body></html>

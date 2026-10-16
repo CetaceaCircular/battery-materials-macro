@@ -1,0 +1,431 @@
+{
+ "meta": {
+  "title": "Battery demand & end-of-life materials, 2020-2050",
+  "version": "v3 (2026-10-13)",
+  "units": {
+   "demand": "TWh",
+   "eol": "TWh of EoL battery feedstock",
+   "materials": "Mt per year (key metals: lithium LCE, nickel, cobalt, copper, graphite)",
+   "plants": "20 ktpa integrated black-mass-to-battery-grade units",
+   "capex_per_plant_USD": 75000000
+  },
+  "materials_list": [
+   "Lithium (LCE)",
+   "Nickel",
+   "Cobalt",
+   "Copper",
+   "Graphite"
+  ],
+  "disclaimer": "Illustrative modelled figures for discussion. Not investment advice. Re-verify against current market data before external use."
+ },
+ "years": [
+  2020,
+  2025,
+  2030,
+  2035,
+  2040,
+  2050
+ ],
+ "scenarios": {
+  "consensus": {
+   "label": "Analyst consensus",
+   "description": "Flat extrapolation; has under-reported battery demand every year since 2020.",
+   "total_demand_TWh": [
+    0.33,
+    1.45,
+    4.6,
+    7.6,
+    11.5,
+    17.5
+   ],
+   "ev_share": [
+    0.88,
+    0.76,
+    0.67,
+    0.61,
+    0.56,
+    0.52
+   ],
+   "china_share": [
+    0.6,
+    0.56,
+    0.51,
+    0.46,
+    0.42,
+    0.37
+   ],
+   "eol_feedstock_TWh": [
+    0.03,
+    0.18,
+    0.55,
+    1.5,
+    3.5,
+    10
+   ],
+   "recovery_share_of_materials": [
+    0.03,
+    0.06,
+    0.1,
+    0.16,
+    0.24,
+    0.34
+   ]
+  },
+  "accelerated_eol": {
+   "label": "Accelerated EoL",
+   "description": "Larger packs (marine/heavy-truck megapacks), data-centre volumes at deep DoD, deeper cycle rates, harsher asset use, 3C & small-format fleet (phones, laptops, tools, warehouse robots, forklifts). 2030-2040 is the steep section of the S-curve: 7 -> 23 TWh, not linear.",
+   "total_demand_TWh": [
+    0.35,
+    1.6,
+    7.0,
+    13,
+    23,
+    38
+   ],
+   "ev_share": [
+    0.86,
+    0.73,
+    0.63,
+    0.56,
+    0.51,
+    0.47
+   ],
+   "china_share": [
+    0.62,
+    0.58,
+    0.52,
+    0.46,
+    0.4,
+    0.33
+   ],
+   "eol_feedstock_TWh": [
+    0.03,
+    0.25,
+    1.3,
+    4.2,
+    9.5,
+    25
+   ],
+   "recovery_share_of_materials": [
+    0.03,
+    0.08,
+    0.16,
+    0.28,
+    0.42,
+    0.6
+   ]
+  },
+  "doubling_down": {
+   "label": "Doubling Down",
+   "description": "All accelerated-EoL drivers plus the 15th FYP circular economy rolling into a 16th FYP fast-track: 50% of battery materials from recovery by 2035. Applied energy of coal, oil and gas replaced; diesel out.",
+   "total_demand_TWh": [
+    0.35,
+    1.7,
+    9.5,
+    19,
+    34,
+    55
+   ],
+   "ev_share": [
+    0.86,
+    0.72,
+    0.62,
+    0.55,
+    0.48,
+    0.42
+   ],
+   "china_share": [
+    0.62,
+    0.58,
+    0.55,
+    0.5,
+    0.44,
+    0.36
+   ],
+   "eol_feedstock_TWh": [
+    0.03,
+    0.28,
+    2.0,
+    7.0,
+    17,
+    38
+   ],
+   "recovery_share_of_materials": [
+    0.03,
+    0.1,
+    0.24,
+    0.5,
+    0.62,
+    0.7
+   ]
+  }
+ },
+ "ev_sector_mix": {
+  "labels": [
+   "Passenger EV",
+   "2/3-wheeler",
+   "3C & small-format industrial",
+   "Commercial vehicle",
+   "Heavy industry / mining truck",
+   "Marine",
+   "Robotics",
+   "Automated port fleet"
+  ],
+  "shares": [
+   [
+    0.78,
+    0.7,
+    0.6,
+    0.52,
+    0.47,
+    0.42
+   ],
+   [
+    0.12,
+    0.13,
+    0.13,
+    0.12,
+    0.1,
+    0.08
+   ],
+   [
+    0.08,
+    0.075,
+    0.07,
+    0.06,
+    0.05,
+    0.045
+   ],
+   [
+    0.05,
+    0.08,
+    0.12,
+    0.15,
+    0.17,
+    0.18
+   ],
+   [
+    0.02,
+    0.045,
+    0.08,
+    0.12,
+    0.15,
+    0.17
+   ],
+   [
+    0.005,
+    0.02,
+    0.04,
+    0.06,
+    0.08,
+    0.1
+   ],
+   [
+    0,
+    0.005,
+    0.02,
+    0.03,
+    0.04,
+    0.06
+   ],
+   [
+    0,
+    0.01,
+    0.02,
+    0.035,
+    0.05,
+    0.07
+   ]
+  ]
+ },
+ "bess_application_mix": {
+  "labels": [
+   "Home battery",
+   "C&I behind-the-meter",
+   "Grid-scale (grid-forming)",
+   "Data centre"
+  ],
+  "shares": [
+   [
+    0.45,
+    0.38,
+    0.3,
+    0.24,
+    0.2,
+    0.16
+   ],
+   [
+    0.3,
+    0.27,
+    0.24,
+    0.22,
+    0.2,
+    0.18
+   ],
+   [
+    0.2,
+    0.25,
+    0.32,
+    0.38,
+    0.42,
+    0.46
+   ],
+   [
+    0.05,
+    0.1,
+    0.14,
+    0.16,
+    0.18,
+    0.2
+   ]
+  ]
+ },
+ "chemistry_mix": {
+  "labels": [
+   "LFP",
+   "NCM / NCA",
+   "Na-ion & other"
+  ],
+  "shares": [
+   [
+    0.38,
+    0.52,
+    0.62,
+    0.63,
+    0.6,
+    0.55
+   ],
+   [
+    0.55,
+    0.4,
+    0.3,
+    0.26,
+    0.23,
+    0.2
+   ],
+   [
+    0.07,
+    0.08,
+    0.08,
+    0.11,
+    0.17,
+    0.25
+   ]
+  ]
+ },
+ "materials_intensity_kt_per_GWh": {
+  "Lithium (LCE)": [
+   0.85,
+   0.85,
+   0.82,
+   0.8,
+   0.78,
+   0.75
+  ],
+  "Nickel": [
+   0.5,
+   0.46,
+   0.42,
+   0.38,
+   0.35,
+   0.32
+  ],
+  "Cobalt": [
+   0.12,
+   0.11,
+   0.1,
+   0.09,
+   0.08,
+   0.07
+  ],
+  "Copper": [
+   0.55,
+   0.55,
+   0.56,
+   0.56,
+   0.57,
+   0.57
+  ],
+  "Graphite": [
+   1.05,
+   1.06,
+   1.07,
+   1.08,
+   1.09,
+   1.1
+  ]
+ },
+ "derived_rules": {
+  "plants_operating": "eol_feedstock_TWh * 1000 / 4.5 (each 20 ktpa plant processes ~4.5 GWh of EoL batteries p.a.)",
+  "cumulative_investment_USD": "sum of annual plant additions * 75,000,000",
+  "materials_demand_t": "total_demand_TWh * 1000 * intensity_kt_per_GWh",
+  "event_markers": {
+   "2026": "Hormuz factor: diesel economics broken; illustrative global spikes EV +38%, PV +30%, BESS +55%, diesel gensets -38% vs 2025"
+  }
+ },
+ "demand_bridge_2040_TWh": {
+  "consensus_baseline": 11.5,
+  "missed_classes_accelerated": {
+   "Swapping float (3x in circulation)": 2.2,
+   "Freight & marine megapacks": 1.9,
+   "2/3-wheelers Global South": 1.4,
+   "3C & small-format industrial": 0.8,
+   "Solar-driven BESS (home/community/C&I)": 2.7,
+   "Grid-forming + data centres": 1.4,
+   "V2G redundancy & faster replacement": 1.1
+  },
+  "accelerated_2040": 23.0,
+  "missed_classes_doubling_down": {
+   "Swapping float (3x in circulation)": 4.3,
+   "Freight & marine megapacks": 3.3,
+   "2/3-wheelers Global South": 2.9,
+   "3C & small-format industrial": 1.5,
+   "Solar-driven BESS (home/community/C&I)": 5.8,
+   "Grid-forming + data centres": 3.1,
+   "V2G redundancy & faster replacement": 1.6
+  },
+  "doubling_down_2040": 34.0
+ },
+ "mine_supply_millions_t": {
+  "existing_plus_committed": [
+   1.1,
+   4.7,
+   7.5,
+   10.0,
+   12.5,
+   16.0
+  ],
+  "note": "Key metals (Li LCE, Ni, Co, Cu, graphite) tonnes from existing + committed mines; demand exceeds this even with recovery \u2014 structural deficit from 2030",
+  "intervention_levers": [
+   "Recovery fast-track: 50% of materials from recovery by 2035 (16th FYP path)",
+   "Alternative storage in the stationary layer: Na-ion, vanadium flow, pumped hydro, compressed air \u2014 freeing lithium/LFP for transport and mobility",
+   "Hydrogen / metal-hydride storage for the seasonal layer after 2035 (slower ramp)",
+   "New mine supply: 10-15 year lead times the deficit will price in"
+  ]
+ },
+ "alternative_storage_china": {
+  "pumped_hydro": {
+   "china_operating_GW_2023": 50.94,
+   "china_target_GW_2030": 120,
+   "china_plan_GW_2035": 400,
+   "constraint": "geography + 5-8 year civil build; absorbs bulk/weekly shifting"
+  },
+  "vanadium_flow": {
+   "dalian_MWh": 800,
+   "jimusa_xinjiang_MWh": 1000,
+   "status": "world-first GWh-scale VFB entered operation Jan 2026, 5h daily cycling co-located with 1 GW solar",
+   "leader": "Rongke Power ~40-50% of global operating VFB fleet",
+   "constraint": "vanadium supply (China ~60% of world output, steel-slag linked); electrolyte leasing mitigates",
+   "share_of_china_new_type_storage_2025": "~1% (overtook CAES and lead-acid)"
+  },
+  "compressed_air": {
+   "huai_an_jiangsu_MWh": 2400,
+   "status": "world's largest CAES online Jan 2026, 71% efficiency",
+   "constraint": "salt-cavern geology"
+  },
+  "metal_hydride_hydrogen": {
+   "status": "niche (materials handling, demonstration); grid role seasonal after 2035",
+   "constraint": "cost per kWh vs batteries at <=24h duration; high-temp Mg hydrides"
+  }
+ }
+}

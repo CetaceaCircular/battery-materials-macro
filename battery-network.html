@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Battery demand and EoL materials 2020-2050 - three futures (Cetacea house view)</title>
+<style>
+:root{
+ --kimi-font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+ --kimi-font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+ --kimi-color-text-primary:#1a1a1a; --kimi-color-text-secondary:#4d4d4d;
+ --kimi-color-text-tertiary:#737373; --kimi-color-text-quaternary:#a6a6a6;
+ --kimi-color-surface:#ffffff; --kimi-color-surface-muted:#f5f5f5;
+ --kimi-color-surface-raised:#ffffff; --kimi-color-surface-strong:#ebebeb;
+ --kimi-color-border:#dcdcdc;
+ --kimi-color-danger:#d5483f; --kimi-color-positive:#2e9e5b; --kimi-color-warning:#d97b1a;
+ --kimi-color-accent:#2f6bff;
+ --kimi-chart-1:#2f6bff; --kimi-chart-2:#d5483f; --kimi-chart-3:#2e9e5b; --kimi-chart-4:#8a5cf6; --kimi-chart-5:#8c8c8c;
+}
+body{margin:0;background:#fafafa;padding:24px}
+.shell{max-width:980px;margin:0 auto;background:var(--kimi-color-surface);border:1px solid var(--kimi-color-border);border-radius:12px;padding:20px 24px}
+</style></head><body><div class="shell">
+<div id="w" style="font-family:var(--kimi-font-sans);color:var(--kimi-color-text-primary)">
+<style>
+#w button,#w input{font:inherit}
+#w svg text{font-family:var(--kimi-font-sans)}
+#w .num{font-variant-numeric:tabular-nums}
+#w .hdr{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid var(--kimi-color-border)}
+#w .ttl{font-size:17px;font-weight:500}
+#w .sub{font-size:12px;color:var(--kimi-color-text-tertiary)}
+#w .pills{display:flex;gap:4px;border:1px solid var(--kimi-color-border);border-radius:8px;padding:2px}
+#w .pills button{border:0;background:transparent;color:var(--kimi-color-text-secondary);padding:4px 10px;border-radius:6px;font-size:13px;cursor:pointer;white-space:nowrap}
+#w .pills button.on{background:var(--kimi-color-text-primary);color:var(--kimi-color-surface)}
+#w .ctrl{display:flex;gap:16px;align-items:center;padding:10px 0;border-bottom:1px solid var(--kimi-color-border)}
+#w .ylab{font-size:14px;font-weight:600;min-width:48px}
+#w input[type=range]{flex:1;accent-color:var(--kimi-color-text-primary)}
+#w .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:10px;padding-top:12px}
+#w .panel{border:1px solid var(--kimi-color-border);border-radius:10px;padding:10px 12px}
+#w .panel .t{font-size:12px;color:var(--kimi-color-text-secondary);font-weight:600}
+#w .panel .u{font-size:10.5px;color:var(--kimi-color-text-tertiary)}
+#w .panel .v{font-size:22px;font-weight:600;margin:4px 0 2px}
+#w .panel .d{font-size:11px;color:var(--kimi-color-text-tertiary);margin-bottom:4px}
+#w .note{font-size:12px;color:var(--kimi-color-text-tertiary);padding-top:10px;border-top:1px solid var(--kimi-color-border);margin-top:12px}
+</style>
+
+<div class="hdr">
+  <div>
+    <div class="ttl">The unmodelled layer: charging · swapping · backup · disposal</div>
+    <div class="sub">Network requirements under each demand scenario — every node is a measurement point (dMRV surface)</div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <div class="pills" id="scenPills">
+      <button data-s="C">Consensus</button><button data-s="A">Accelerated</button><button data-s="DD" class="on">Doubling Down</button>
+    </div>
+    <div class="pills" id="regPills">
+      <button data-r="G" class="on">Global</button><button data-r="CN">China</button><button data-r="ROW">ROW</button>
+    </div>
+  </div>
+</div>
+
+<div class="ctrl">
+  <span class="ylab num" id="yearLab">2030</span>
+  <input type="range" id="yr" min="0" max="5" value="2" step="1">
+  <button id="play" style="border:1px solid var(--kimi-color-border);background:transparent;border-radius:6px;padding:4px 12px;font-size:12px;color:var(--kimi-color-text-secondary);cursor:pointer">Play 2020→2050</button>
+</div>
+
+<div class="grid" id="grid"></div>
+<div class="note">Derived from the demand model: swap float = swapped segments (2/3W, taxis, commercial, marine) × 2 spare packs in circulation; stations assume ~250 MWh swapped volume per station (mixed light/heavy); charging = in-service vehicle stock × ~32 equivalent full cycles/yr; backup fleet = dedicated resilience share of cumulative stationary storage; recovery nodes = processing plants + ~1 collection depot per 5 GWh/yr of EoL feedstock. Illustrative figures.</div>
+</div>
+
+<script>
+const YEARS=[2020,2025,2030,2035,2040,2050];
+const D={
+ C:{tot:[0.33,1.45,4.6,7.6,11.5,17.5],ev:[.88,.76,.67,.61,.56,.52],cn:[.60,.56,.51,.46,.42,.37],eol:[.03,.18,.55,1.5,3.5,10]},
+ A:{tot:[0.35,1.60,7.0,13,23,38],ev:[.86,.73,.63,.56,.51,.47],cn:[.62,.58,.52,.46,.40,.33],eol:[.03,.25,1.3,4.2,9.5,25]},
+ DD:{tot:[0.35,1.7,9.5,19,34,55],ev:[.86,.72,.62,.55,.48,.42],cn:[.62,.58,.55,.50,.44,.36],eol:[.03,.28,2.0,7.0,17,38]}};
+const SW=[.02,.05,.10,.16,.20,.23], BSH=[.10,.13,.16,.19,.21,.22];
+let st={s:'DD',r:'G',y:2,playing:false};
+const $=id=>document.getElementById(id);
+const fmt=(v,d=0)=>v.toLocaleString('en-US',{maximumFractionDigits:d});
+const C1='var(--kimi-chart-1)',GR='var(--kimi-color-text-quaternary)',TP='var(--kimi-color-text-primary)';
+const mix=(c,p)=>('color-mix(in srgb,'+c+' '+p+'%,transparent)');
+function series(){
+ const s=D[st.s];
+ const rf=YEARS.map((_,i)=>st.r==='G'?1:(st.r==='CN'?s.cn[i]:1-s.cn[i]));
+ const ev=s.tot.map((t,i)=>t*s.ev[i]*rf[i]);
+ const fl=ev.map((v,i)=>v*SW[i]*2);
+ const stk=[ev[0]*3];
+ for(let i=1;i<6;i++)stk[i]=stk[i-1]+(ev[i-1]+ev[i])/2*5*0.92;
+ const chg=stk.map(v=>v*32);
+ const be=s.tot.map((t,i)=>t*(1-s.ev[i])*rf[i]);
+ const cb=[be[0]*3];
+ for(let i=1;i<6;i++)cb[i]=cb[i-1]+(be[i-1]+be[i])/2*5*0.95;
+ const bak=cb.map((v,i)=>v*BSH[i]*1000);
+ const stations=fl.map(v=>Math.round(v*1e6/250));
+ const plants=s.eol.map(e=>Math.round(e*1000/4.5));
+ const depots=s.eol.map(e=>Math.round(e*1000/5));
+ return {fl,stk,chg,bak,stations,plants,depots,ev};
+}
+function spark(arr,y,d){
+ const W=215,H=64,pt=8,pb=6,pl=6,pr=6,x0=pl,y0=H-pb,xw=W-pl-pr,yw=H-pt-pb;
+ const mx=Math.max(...arr)*1.08||1;
+ const X=i=>x0+xw*i/5,Y=v=>y0-yw*v/mx;
+ let p='';arr.forEach((v,i)=>p+=(i?'L':'M')+X(i)+' '+Y(v)+' ');
+ let g='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block">';
+ g+='<path d="'+p+' L'+X(5)+' '+y0+' L'+X(0)+' '+y0+'" fill="'+mix(C1,22)+'" stroke="none"/>';
+ g+='<path d="'+p+'" fill="none" stroke="'+C1+'" stroke-width="2"/>';
+ arr.forEach((v,i)=>{if(i===y)g+='<circle cx="'+X(i)+'" cy="'+Y(v)+'" r="4" fill="'+TP+'"/><text x="'+Math.min(X(i)+6,W-40)+'" y="'+(Y(v)-6)+'" font-size="10" font-weight="600" fill="'+TP+'" class="num">'+fmt(v,d)+'</text>';});
+ g+='</svg>';
+ return g;
+}
+const PANELS=[
+ {k:'stations',t:'Swap stations',u:'nodes',d:'the "waiting / charging" grid layer',d2:0},
+ {k:'fl',t:'Spare-pack float',u:'TWh of packs in stations',d:'grid-tied storage owned by operators',d2:1},
+ {k:'chg',t:'Charging energy',u:'TWh / yr',d:'electrons through somebody\u2019s meter',d2:0},
+ {k:'bak',t:'Backup / resilience fleet',u:'GWh of dedicated backup packs',d:'the diesel-genset replacement class',d2:0},
+ {k:'plants',t:'Recovery plants',u:'20 ktpa integrated units',d:'the disposal network\u2019s engine room',d2:0},
+ {k:'depots',t:'Collection depots',u:'feedstock gateways',d:'reverse logistics — the certification surface',d2:0}];
+function render(){
+ $('yearLab').textContent=YEARS[st.y];
+ document.querySelectorAll('#scenPills button').forEach(b=>b.classList.toggle('on',b.dataset.s===st.s));
+ document.querySelectorAll('#regPills button').forEach(b=>b.classList.toggle('on',b.dataset.r===st.r));
+ const S=series();
+ let h='';
+ PANELS.forEach(p=>{
+  h+='<div class="panel"><div class="t">'+p.t+'</div><div class="u">'+p.u+'</div><div class="v num">'+fmt(S[p.k][st.y],p.d2)+'</div><div class="d">'+p.d+'</div>'+spark(S[p.k],st.y,p.d2)+'</div>';
+ });
+ $('grid').innerHTML=h;
+}
+document.querySelectorAll('#scenPills button').forEach(b=>b.onclick=()=>{st.s=b.dataset.s;render();});
+document.querySelectorAll('#regPills button').forEach(b=>b.onclick=()=>{st.r=b.dataset.r;render();});
+$('yr').addEventListener('input',e=>{st.y=+e.target.value;render();});
+let tm=null;
+$('play').onclick=()=>{if(st.playing){clearInterval(tm);st.playing=false;$('play').textContent='Play 2020→2050';return;}
+ st.playing=true;$('play').textContent='Stop';st.y=0;
+ tm=setInterval(()=>{if(st.y>=5){clearInterval(tm);st.playing=false;$('play').textContent='Play 2020→2050';}$('yr').value=st.y;render();st.y++;},1100);};
+render();
+</script></div></body></html>
